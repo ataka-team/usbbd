@@ -1,0 +1,4 @@
+[global]
+password=usbbd
+usbdir=__usbbd__loader__
+usbcmd=usbrun

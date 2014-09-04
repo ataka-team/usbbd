@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+#
+# Maintainer: Pablo Saavedra
+# Contact: saavedra.pablo@gmail.com
+
+import os
+import sys
+import signal
+
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+except Exception:
+    pass
+
+try:
+  try:
+    import ConfigParser
+  except ImportError:
+    import confiparser.ConfigParser
+except Exception:
+    pass
+
+
+from optparse import OptionParser
+
+################################################################################
+conffile = ".usbbd.cfg"
+logfile = "/dev/stdout"
+loglevel = 20
+
+# TODO: Vars.
+password="usbbd"
+usbdir="__usbbd__loader__"
+usbcmd="usbrun"
+
+################################################################################
+
+def setup():
+    global conffile
+    cfg = ConfigParser.ConfigParser()
+    cfg.read(conffile)
+    try:
+        for o in cfg.options("global"):
+            try:
+                value = cfg.get("global",o)
+                logger.debug("Setting %s to %s" % (o,value))
+            except Exception as e:
+                logger.error("Error parsing %s - %s: %s" % ("global",o,e))
+    except Exception as e:
+        logger.error("Raised exception: %s" % e)
+
+# TODO: Functions and Classes
+
+# command line options parser ##################################################
+parser = OptionParser()
+parser.add_option("-c", "--conffile", dest="conffile", default=conffile,
+                  help="Conffile (default: %s)" % conffile)
+parser.add_option("-l", "--logfile",
+        dest="logfile", help="Log file (default: %s)" % logfile,
+        default=logfile)
+parser.add_option("--loglevel",
+        dest="loglevel", help="Log level (default: %s)" % loglevel,
+        default=loglevel)
+(options, args) = parser.parse_args()
+logfile = options.logfile
+loglevel = options.loglevel
+conffile = options.conffile
+
+
+# logging ######################################################################
+import logging
+hdlr = logging.FileHandler(logfile)
+hdlr.setFormatter(logging.Formatter('%(levelname)s %(asctime)s %(message)s'))
+logger = logging.getLogger('usbbd')
+logger.addHandler(hdlr)
+logger.setLevel(int(loglevel))
+
+
+# setting up ###################################################################
+logger.debug("Default encoding: %s" % sys.getdefaultencoding())
+setup()
+
+if __name__ == '__main__':
+    # TODO: main function
+
+sys.exit(0)
+
+
+
